@@ -54,4 +54,16 @@ describe("fetchTaskLists (no grouping)", () => {
       fetchTaskLists(controller.signal)
     ).rejects.toThrow();
   });
+  
+  it("passes signal to axios and handles abort", async () => {
+    const controller = new AbortController();
+    axios.get.mockRejectedValueOnce(new DOMException("Aborted", "AbortError"));
+    
+    await expect(fetchTaskLists(controller.signal)).rejects.toThrow();
+    
+    expect(axios.get).toHaveBeenCalledWith(
+        "https://jsonplaceholder.typicode.com/todos",
+        { signal: controller.signal }
+    );
+});
 });
