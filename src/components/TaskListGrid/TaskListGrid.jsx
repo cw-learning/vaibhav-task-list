@@ -1,37 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TaskList from '../TaskList/TaskList.jsx';
+import { fetchTaskLists } from '../../services/taskListService.js';
 
 export default function TaskListGrid() {
-  const [taskLists, setTaskLists] = useState([
-    {
-      id: 1,
-      title: 'Daily Work Tasks',
-      status: 'in-progress',
-      items: [
-        { id: 1, title: 'Finish UI design', completed: false },
-        { id: 2, title: 'Setup project structure', completed: true },
-        { id: 3, title: 'Install dependencies', completed: true },
-        { id: 4, title: 'Connect API', completed: false },
-        { id: 5, title: 'Write tests', completed: false },
-        { id: 6, title: 'Deploy to staging', completed: true },
-        { id: 7, title: 'Review code', completed: false },
-        { id: 8, title: 'Update documentation', completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: 'Shopping List',
-      status: 'completed',
-      items: [
-        { id: 1, title: 'Buy groceries', completed: true },
-        { id: 2, title: 'Get milk', completed: true },
-        { id: 3, title: 'Buy bread', completed: true },
-        { id: 4, title: 'Get eggs', completed: true },
-        { id: 5, title: 'Buy vegetables', completed: true },
-      ],
-    },
-  ]);
+  const [taskLists, setTaskLists] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTaskLists() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchTaskLists(controller.signal);
+        console.log('Fetched task lists:', data);
+        const mappedLists = data.slice(0, 10).map(list => ({
+          id: list.listId,
+          title: list.title,
+          status: list.completed ? "completed" : "in-progress",
+          items: [
+          ]
+        }));
+
+        setTaskLists(mappedLists);
+      } catch (err) {
+        if (err.name !== "CanceledError") {
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTaskLists();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
   const [newListTitle, setNewListTitle] = useState('');
 
   // Helper function to calculate status based on items
