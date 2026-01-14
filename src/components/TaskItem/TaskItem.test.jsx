@@ -17,7 +17,7 @@ describe('TaskItem', () => {
 
   it('renders task title', () => {
     render(<TaskItem task={mockTask} {...mockHandlers} />);
-    expect(screen.getByText('Test Task')).toBeDefined();
+    expect(screen.getByText('Test Task')).toBeInTheDocument();
   });
 
   it('calls onToggle when checkbox is clicked', () => {
@@ -38,8 +38,8 @@ describe('TaskItem', () => {
     render(<TaskItem task={mockTask} {...mockHandlers} />);
     const editButton = screen.getByText('Edit');
     fireEvent.click(editButton);
-    expect(screen.getByDisplayValue('Test Task')).toBeDefined();
-    expect(screen.getByText('Save')).toBeDefined();
+    expect(screen.getByDisplayValue('Test Task')).toBeInTheDocument();
+    expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
   it('calls onEdit when save is clicked with new title', () => {
@@ -55,6 +55,6 @@ describe('TaskItem', () => {
     const completedTask = { ...mockTask, completed: true };
     render(<TaskItem task={completedTask} {...mockHandlers} />);
     const title = screen.getByText('Test Task');
-    expect(title.className).toContain('line-through');
+    expect(title).toHaveClass('line-through');
   });
 });
