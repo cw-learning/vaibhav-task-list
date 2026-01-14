@@ -1,46 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import TaskList from '../TaskList/TaskList.jsx';
-import { fetchTaskLists } from '../../services/taskListService.js';
+import { useTaskLists } from '../../hooks/useTaskLists';
 
 export default function TaskListGrid() {
-  const [taskLists, setTaskLists] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadTaskLists() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await fetchTaskLists(controller.signal);
-        console.log('Fetched task lists:', data);
-        const mappedLists = data.slice(0, 10).map(list => ({
-          id: list.listId,
-          title: list.title,
-          status: list.completed ? "completed" : "in-progress",
-          items: [
-          ]
-        }));
-
-        setTaskLists(mappedLists);
-      } catch (err) {
-        if (err.name !== "CanceledError") {
-          setError(err.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadTaskLists();
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
+  const { taskLists, setTaskLists, loading, error } = useTaskLists();
   const [newListTitle, setNewListTitle] = useState('');
 
   // Helper function to calculate status based on items
@@ -69,7 +32,6 @@ export default function TaskListGrid() {
         const updatedItems = list.items.map(item =>
           item.id === itemId ? { ...item, completed: !item.completed } : item
         );
-        
         return {
           ...list,
           status: calculateStatus(updatedItems),
@@ -105,9 +67,7 @@ export default function TaskListGrid() {
           title: itemTitle.trim(),
           completed: false,
         };
-        
         const updatedItems = [...list.items, newItem];
-        
         return {
           ...list,
           status: calculateStatus(updatedItems),
@@ -141,6 +101,10 @@ export default function TaskListGrid() {
           </button>
         </div>
 
+        {/* Loading and error states */}
+        {loading && <p className="text-center text-gray-500 py-16">Loading...</p>}
+        {error && <p className="text-center text-red-500 py-16">{error}</p>}
+
         {/* Grid of task lists */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {taskLists.map(taskList => (
@@ -155,7 +119,7 @@ export default function TaskListGrid() {
           ))}
         </div>
 
-        {taskLists.length === 0 && (
+        {taskLists.length === 0 && !loading && (
           <p className="text-center text-gray-500 py-16">
             No task lists yet. Create one to get started!
           </p>
