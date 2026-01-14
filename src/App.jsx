@@ -1,16 +1,14 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import TaskList from './components/TaskList/TaskList.jsx';
+import TaskListGrid from './components/TaskListGrid/TaskListGrid.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-    <h1 class="text-3xl font-bold underline italic">
-    Task List Application
-    </h1>
-    </>
-  )
+    <div className="min-h-screen">
+      <TaskListGrid />
+    </div>
+  );
 }
 
-export default App
+export default App;

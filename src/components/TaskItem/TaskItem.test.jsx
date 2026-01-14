@@ -3,58 +3,39 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import TaskItem from './TaskItem';
 
 describe('TaskItem', () => {
-  const mockTask = {
+  const mockItem = {
     id: 1,
-    title: 'Test Task',
+    title: 'Test Item',
     completed: false,
   };
 
-  const mockHandlers = {
-    onToggle: vi.fn(),
-    onDelete: vi.fn(),
-    onEdit: vi.fn(),
-  };
-
-  it('renders task title', () => {
-    render(<TaskItem task={mockTask} {...mockHandlers} />);
-    expect(screen.getByText('Test Task')).toBeInTheDocument();
+  it('renders item title', () => {
+    const onToggle = vi.fn();
+    render(<TaskItem item={mockItem} onToggle={onToggle} />);
+    expect(screen.getByText('Test Item')).toBeInTheDocument();
   });
 
   it('calls onToggle when checkbox is clicked', () => {
-    render(<TaskItem task={mockTask} {...mockHandlers} />);
+    const onToggle = vi.fn();
+    render(<TaskItem item={mockItem} onToggle={onToggle} />);
     const checkbox = screen.getByRole('checkbox');
     fireEvent.click(checkbox);
-    expect(mockHandlers.onToggle).toHaveBeenCalledWith(1);
+    expect(onToggle).toHaveBeenCalledWith(1);
   });
 
-  it('calls onDelete when delete button is clicked', () => {
-    render(<TaskItem task={mockTask} {...mockHandlers} />);
-    const deleteButton = screen.getByText('Delete');
-    fireEvent.click(deleteButton);
-    expect(mockHandlers.onDelete).toHaveBeenCalledWith(1);
-  });
-
-  it('enters edit mode when edit button is clicked', () => {
-    render(<TaskItem task={mockTask} {...mockHandlers} />);
-    const editButton = screen.getByText('Edit');
-    fireEvent.click(editButton);
-    expect(screen.getByDisplayValue('Test Task')).toBeInTheDocument();
-    expect(screen.getByText('Save')).toBeInTheDocument();
-  });
-
-  it('calls onEdit when save is clicked with new title', () => {
-    render(<TaskItem task={mockTask} {...mockHandlers} />);
-    fireEvent.click(screen.getByText('Edit'));
-    const input = screen.getByDisplayValue('Test Task');
-    fireEvent.change(input, { target: { value: 'Updated Task' } });
-    fireEvent.click(screen.getByText('Save'));
-    expect(mockHandlers.onEdit).toHaveBeenCalledWith(1, 'Updated Task');
-  });
-
-  it('applies line-through style when task is completed', () => {
-    const completedTask = { ...mockTask, completed: true };
-    render(<TaskItem task={completedTask} {...mockHandlers} />);
-    const title = screen.getByText('Test Task');
+  it('applies line-through when completed', () => {
+    const completedItem = { ...mockItem, completed: true };
+    const onToggle = vi.fn();
+    render(<TaskItem item={completedItem} onToggle={onToggle} />);
+    const title = screen.getByText('Test Item');
     expect(title).toHaveClass('line-through');
+  });
+
+  it('checkbox is checked when item is completed', () => {
+    const completedItem = { ...mockItem, completed: true };
+    const onToggle = vi.fn();
+    render(<TaskItem item={completedItem} onToggle={onToggle} />);
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeChecked();
   });
 });

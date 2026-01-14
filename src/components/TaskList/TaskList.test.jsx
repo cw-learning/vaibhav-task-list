@@ -1,65 +1,59 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TaskList from './TaskList';
 
 describe('TaskList', () => {
-  it('renders the task list heading', () => {
-    render(<TaskList />);
-    expect(screen.getByText('Task List')).toBeInTheDocument();
+  const mockTaskList = {
+    id: 1,
+    title: 'Daily Tasks',
+    status: 'in-progress',
+    items: [
+      { id: 1, title: 'Task 1', completed: true },
+      { id: 2, title: 'Task 2', completed: false },
+      { id: 3, title: 'Task 3', completed: false },
+    ],
+  };
+
+  const mockHandlers = {
+    onToggleItem: vi.fn(),
+    onMarkAsDone: vi.fn(),
+    onDelete: vi.fn(),
+  };
+
+  it('renders task list title and id', () => {
+    render(<TaskList taskList={mockTaskList} {...mockHandlers} />);
+    expect(screen.getByText('Daily Tasks')).toBeInTheDocument();
+    expect(screen.getByText('#1')).toBeInTheDocument();
   });
 
-  it('shows empty state when no tasks', () => {
-    render(<TaskList />);
-    expect(screen.getByText(/No tasks yet/i)).toBeInTheDocument();
+  it('displays correct item counts', () => {
+    render(<TaskList taskList={mockTaskList} {...mockHandlers} />);
+    expect(screen.getByText('1')).toBeInTheDocument(); // completed
+    expect(screen.getByText('2')).toBeInTheDocument(); // pending
   });
 
-  it('adds a new task when Add button is clicked', () => {
-    render(<TaskList />);
-    const input = screen.getByPlaceholderText('Add a new task...');
-    const addButton = screen.getByText('Add');
-
-    fireEvent.change(input, { target: { value: 'New Task' } });
-    fireEvent.click(addButton);
-
-    expect(screen.getByText('New Task')).toBeInTheDocument();
+  it('opens modal when title is clicked', () => {
+    render(<TaskList taskList={mockTaskList} {...mockHandlers} />);
+    fireEvent.click(screen.getByText('Daily Tasks'));
+    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    expect(screen.getByText('Task 2')).toBeInTheDocument();
   });
 
-  it('adds task on Enter key press', () => {
-    render(<TaskList />);
-    const input = screen.getByPlaceholderText('Add a new task...');
-
-    fireEvent.change(input, { target: { value: 'Another Task' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(screen.getByText('Another Task')).toBeInTheDocument();
+  it('calls onMarkAsDone when button is clicked', () => {
+    render(<TaskList taskList={mockTaskList} {...mockHandlers} />);
+    fireEvent.click(screen.getByText('Mark as Done'));
+    expect(mockHandlers.onMarkAsDone).toHaveBeenCalledWith(1);
   });
 
-  it('clears input after adding task', () => {
-    render(<TaskList />);
-    const input = screen.getByPlaceholderText('Add a new task...');
-
-    fireEvent.change(input, { target: { value: 'Task' } });
-    fireEvent.click(screen.getByText('Add'));
-
-    expect(input.value).toBe('');
+  it('displays progress bar with correct width', () => {
+    const { container } = render(<TaskList taskList={mockTaskList} {...mockHandlers} />);
+    const progressBar = container.querySelector('[style*="width"]');
+    expect(progressBar?.style.width).toBe('33.33333333333333%');
   });
 
-  it('does not add empty tasks', () => {
-    render(<TaskList />);
-    const addButton = screen.getByText('Add');
-
-    fireEvent.click(addButton);
-
-    expect(screen.getByText(/No tasks yet/i)).toBeInTheDocument();
-  });
-
-  it('displays task count', () => {
-    render(<TaskList />);
-    const input = screen.getByPlaceholderText('Add a new task...');
-
-    fireEvent.change(input, { target: { value: 'Task 1' } });
-    fireEvent.click(screen.getByText('Add'));
-
-    expect(screen.getByText('0 of 1 completed')).toBeInTheDocument();
+  it('shows completed badge for completed lists', () => {
+    const completedList = { ...mockTaskList, status: 'completed' };
+    render(<TaskList taskList={completedList} {...mockHandlers} />);
+    expect(screen.getByText('Completed')).toBeInTheDocument();
   });
 });
