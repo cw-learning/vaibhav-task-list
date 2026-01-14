@@ -79,34 +79,34 @@ export default function TaskListGrid() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
+    <div className="bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 max-w-full p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-semibold mb-6">Task Lists</h1>
+        <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">Task Lists</h1>
 
         {/* Add new list */}
-        <div className="mb-6 flex gap-2 max-w-md">
+        <div className="mb-10 flex gap-3 max-w-xl">
           <input
             type="text"
             value={newListTitle}
             onChange={(e) => setNewListTitle(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addTaskList()}
             placeholder="Create a new task list..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-5 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white placeholder:text-gray-400"
           />
           <button
             onClick={addTaskList}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="px-8 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
             Add List
           </button>
         </div>
 
         {/* Loading and error states */}
-        {loading && <p className="text-center text-gray-500 py-16">Loading...</p>}
-        {error && <p className="text-center text-red-500 py-16">{error}</p>}
+        {loading && <p className="text-center text-gray-600 py-20 text-lg font-medium animate-pulse">Loading...</p>}
+        {error && <p className="text-center text-red-600 py-20 text-lg font-medium bg-red-50 rounded-xl mx-auto max-w-2xl shadow-sm">{error}</p>}
 
         {/* Grid of task lists */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {taskLists.map(taskList => (
             <TaskList
               key={taskList.id}
@@ -120,9 +120,14 @@ export default function TaskListGrid() {
         </div>
 
         {taskLists.length === 0 && !loading && (
-          <p className="text-center text-gray-500 py-16">
-            No task lists yet. Create one to get started!
-          </p>
+          <div className="text-center py-24">
+            <p className="text-gray-500 text-lg font-medium mb-2">
+              No task lists yet. Create one to get started!
+            </p>
+            <p className="text-gray-400 text-sm">
+              ✨ Add your first task list above
+            </p>
+          </div>
         )}
       </div>
     </div>
