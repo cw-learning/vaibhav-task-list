@@ -1,10 +1,71 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import TaskList from '../TaskList/TaskList.jsx';
 import { useTaskLists } from '../../hooks/useTaskLists';
+
+//Ag grid imports
+import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
+import {
+  ClientSideRowModelModule,
+  ModuleRegistry,
+  ValidationModule,
+  PaginationModule
+} from "ag-grid-community";
+import { MasterDetailModule  } from "ag-grid-enterprise";
+
+// Register all Community features
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  MasterDetailModule,
+  PaginationModule,
+  ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
+]);
 
 export default function TaskListGrid() {
   const { taskLists, setTaskLists, loading, error } = useTaskLists();
   const [newListTitle, setNewListTitle] = useState('');
+
+  const [columnDefs, setColumnDefs] = useState([
+    {field : 'id', cellRenderer: "agGroupCellRenderer" },
+    {field : 'title' , flex: 2 },
+    {field : 'status' },
+    {field: "totalItems", valueGetter: (params) => params.data.items.length },
+    {field: "pendingItems", valueGetter: (params) => params.data.items.filter(item => !item.completed).length },
+    {field: "completedItems", valueGetter: (params) => params.data.items.filter(item => item.completed).length },
+    {field: "progress", valueGetter: (params) => {
+      const total = params.data.items.length;
+      const completed = params.data.items.filter(item => item.completed).length;
+      if (params.data.status === 'completed') {
+        return '100%';
+      }else { return total === 0 ? '0%' : `${Math.round((completed / total) * 100)}%`;}
+    } }
+
+  ]);
+  
+  const defaultColDef = useMemo(() => {
+    return {
+      flex: 1,
+    };
+  }, []);
+  
+  const detailCellRendererParams = useMemo(() => {
+    return {
+      detailGridOptions: {
+        pagination: true,
+        paginationAutoPageSize: true,
+        columnDefs: [
+          { field: "id" },
+          { field: "title" },
+          { field: "completed", valueGetter: (params) => params.data.completed ? 'Yes' : 'No' },
+        ],
+        defaultColDef: {
+          flex: 1,
+        }
+      },
+      getDetailRowData: (params) => {
+        params.successCallback(params.data.items);
+      },
+    };
+  }, []);
 
   // Helper function to calculate status based on items
   const calculateStatus = (items) => {
@@ -78,8 +139,25 @@ export default function TaskListGrid() {
     }));
   };
 
+  const pagination = true;
+  const paginationPageSize = 5;
+  const paginationPageSizeSelector = [5, 10, 20];
   return (
     <div className="bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 max-w-full p-8">
+      <div className = 'max-w-7xl mx-auto py-5' style={{ }}>
+        <h1 className="text-4xl font-bold mb-8 pb-1 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">AgGrid Summary Table</h1>
+        <AgGridReact
+            rowData={taskLists}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            masterDetail={true}
+            detailCellRendererParams={detailCellRendererParams}
+            domLayout='autoHeight'
+            pagination={pagination}
+            paginationPageSize={paginationPageSize}
+            paginationPageSizeSelector={paginationPageSizeSelector}
+        />
+    </div>
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">Task Lists</h1>
 
