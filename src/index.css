@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+.ag-theme-material.custom-grid {
+	--ag-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+	--ag-font-size: 14px;
+	--ag-row-height: 48px;
+	--ag-header-height: 52px;
+	--ag-background-color: rgba(255, 255, 255, 0.85);
+	--ag-foreground-color: #334155;
+	--ag-header-background-color: #f8fafc;
+	--ag-header-foreground-color: #1f2937;
+	--ag-odd-row-background-color: #f8fafc;
+	--ag-row-hover-color: #e0e7ff;
+	--ag-selected-row-background-color: #e0e7ff;
+	--ag-border-color: #e2e8f0;
+	--ag-row-border-color: #edf2f7;
+	--ag-cell-horizontal-padding: 14px;
+	--ag-grid-size: 6px;
+}
+
+.ag-theme-material.custom-grid .ag-header-cell-label {
+	font-weight: 700;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #475569;
+}
+
+.ag-theme-material.custom-grid .ag-row {
+	transition: background-color 0.2s ease;
+}
+
+.ag-theme-material.custom-grid .ag-cell {
+	display: flex;
+	align-items: center;
+	line-height: 1.4;
+}
+
+.ag-theme-material.custom-grid .ag-cell-wrapper {
+	align-items: center;
+}
+
+.ag-theme-material.custom-grid .ag-paging-panel {
+	border-top: 1px solid #e2e8f0;
+	padding: 10px 14px;
+	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.ag-theme-material.custom-grid .ag-paging-button:hover {
+	background-color: #e0e7ff;
+	color: #4f46e5;
+}
