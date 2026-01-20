@@ -21,29 +21,43 @@ ModuleRegistry.registerModules([
   PaginationModule,
   AllCommunityModule,
   SetFilterModule,
-  ...(process.env.NODE_ENV !== "production" ? [ValidationModule] : []),
+  ...(!import.meta.env.PROD ? [ValidationModule] : []),
 ]);
+const PAGINATION = true;
+const PAGINATION_PAGE_SIZE = 5;
+const PAGINATION_PAGE_SIZE_SELECTOR = [5, 10, 20];
 
 export default function TaskListGrid() {
   const { taskLists, setTaskLists, loading, error } = useTaskLists();
   const [newListTitle, setNewListTitle] = useState('');
 
-  const [columnDefs, setColumnDefs] = useState([
-    {field : 'id', cellRenderer: "agGroupCellRenderer" },
-    {field : 'title' , flex: 2 },
-    {field : 'status', filter:'agSetColumnFilter' },
-    {field: "totalItems", valueGetter: (params) => params.data.items.length },
-    {field: "pendingItems", valueGetter: (params) => params.data.items.filter(item => !item.completed).length },
-    {field: "completedItems", valueGetter: (params) => params.data.items.filter(item => item.completed).length },
-    {field: "progress", valueGetter: (params) => {
-      const total = params.data.items.length;
-      const completed = params.data.items.filter(item => item.completed).length;
-      if (params.data.status === 'completed') {
-        return '100%';
-      }else { return total === 0 ? '0%' : `${Math.round((completed / total) * 100)}%`;}
-    } }
-
-  ]);
+  const columnDefs = useMemo(() => [
+  { field: 'id', cellRenderer: 'agGroupCellRenderer' },
+  { field: 'title', flex: 2 },
+  { field: 'status', filter: 'agSetColumnFilter' },
+  {
+    field: 'totalItems',
+    valueGetter: ({ data }) => (data?.items?.length ?? 0),
+  },
+  {
+    field: 'pendingItems',
+    valueGetter: ({ data }) => (data?.items ?? []).filter((item) => !item.completed).length,
+  },
+  {
+    field: 'completedItems',
+    valueGetter: ({ data }) => (data?.items ?? []).filter((item) => item.completed).length,
+  },
+  {
+    field: 'progress',
+    valueGetter: ({ data }) => {
+      const items = data?.items ?? [];
+      const total = items.length;
+      const completed = items.filter((item) => item.completed).length;
+      if (data?.status === 'completed') return '100%';
+      return total === 0 ? '0%' : `${Math.round((completed / total) * 100)}%`;
+    },
+  },
+], []);
   
   const defaultColDef = useMemo(() => {
     return {
@@ -162,9 +176,9 @@ export default function TaskListGrid() {
               masterDetail={true}
               detailCellRendererParams={detailCellRendererParams}
               domLayout='autoHeight'
-              pagination={pagination}
-              paginationPageSize={paginationPageSize}
-              paginationPageSizeSelector={paginationPageSizeSelector}
+              pagination={PAGINATION}
+              paginationPageSize={PAGINATION_PAGE_SIZE}
+              paginationPageSizeSelector={PAGINATION_PAGE_SIZE_SELECTOR}
               animateRows={true}
           />
         </div>

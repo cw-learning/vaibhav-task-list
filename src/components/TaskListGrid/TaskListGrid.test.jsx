@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useState } from 'react';
+import { render, screen, waitFor} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TaskListGrid from './TaskListGrid';
 
 // Mock AG Grid React component
@@ -32,6 +34,29 @@ vi.mock('ag-grid-community', () => ({
 vi.mock('ag-grid-enterprise', () => ({
   MasterDetailModule: {},
   SetFilterModule: {},
+}));
+ 
+// Mock useTaskLists hook to provide controlled data
+vi.mock('../../hooks/useTaskLists', () => ({
+  useTaskLists: () => {
+    const [taskLists, setTaskLists] = useState([
+      {
+        id: 1,
+        title: 'Test Task List',
+        status: 'in-progress',
+        items: [
+          { id: 1, title: 'Test Item', completed: false }
+        ]
+      }
+    ]);
+    
+    return {
+      taskLists,
+      setTaskLists,
+      loading: false,
+      error: null
+    };
+  }
 }));
 
 describe('TaskListGrid', () => {
@@ -94,34 +119,39 @@ describe('TaskListGrid', () => {
   describe('Adding Task Lists', () => {
     
     it('clears input after adding list', async () => {
+      const user = userEvent.setup();
       render(<TaskListGrid />);
       const input = screen.getByPlaceholderText('Create a new task list...');
       
-      fireEvent.change(input, { target: { value: 'New List' } });
-      fireEvent.click(screen.getByText('Add List'));
+      await user.type(input, 'New List');
+      await user.click(screen.getByRole('button', { name: /add list/i }));
 
       await waitFor(() => {
         expect(input).toHaveValue('');
       });
     });
 
-    it('does not add empty task list', () => {
+    it('does not add empty task list', async () => {
+      const user = userEvent.setup();
       render(<TaskListGrid />);
-      const input = screen.getByPlaceholderText('Create a new task list...');
-      
-      fireEvent.change(input, { target: { value: '   ' } });
-      fireEvent.click(screen.getByText('Add List'));
 
-      expect(input).toHaveValue('   ');
+      const initialRowCount = Number(screen.getByTestId('ag-grid-row-count').textContent);
+      const input = screen.getByPlaceholderText('Create a new task list...');
+
+      await user.type(input, '   ');
+      await user.click(screen.getByRole('button', { name: /add list/i }));
+
+      expect(Number(screen.getByTestId('ag-grid-row-count').textContent)).toBe(initialRowCount);
     });
 
     it('updates AG Grid row count after adding list', async () => {
+      const user = userEvent.setup();
       render(<TaskListGrid />);
       const initialRowCount = parseInt(screen.getByTestId('ag-grid-row-count').textContent);
       
       const input = screen.getByPlaceholderText('Create a new task list...');
-      fireEvent.change(input, { target: { value: 'Another List' } });
-      fireEvent.click(screen.getByText('Add List'));
+      await user.type(input, 'Another List');
+      await user.click(screen.getByRole('button', { name: /add list/i }));
 
       await waitFor(() => {
         const newRowCount = parseInt(screen.getByTestId('ag-grid-row-count').textContent);
