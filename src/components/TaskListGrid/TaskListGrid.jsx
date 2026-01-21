@@ -3,7 +3,7 @@ import TaskList from '../TaskList/TaskList.jsx';
 import { useTaskLists } from '../../hooks/useTaskLists';
 
 //Ag grid imports
-import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
+import { AgGridReact } from 'ag-grid-react';
 import {
   ClientSideRowModelModule,
   ModuleRegistry,
@@ -88,7 +88,6 @@ export default function TaskListGrid() {
     };
   }, []);
 
-  // Helper function to calculate status based on items
   const calculateStatus = (items) => {
     if (items.length === 0) return 'not-started';
     const allCompleted = items.every(item => item.completed);
@@ -165,7 +164,7 @@ export default function TaskListGrid() {
   const paginationPageSizeSelector = [5, 10, 20];
   return (
     <div className="bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 max-w-full p-8">
-      <div className = 'max-w-7xl mx-auto py-5' style={{ }}>
+      <div className = 'max-w-7xl mx-auto py-5'>
         <h1 className="text-4xl font-bold mb-8 pb-1 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">AgGrid Summary Table</h1>
         <div className="ag-theme-material custom-grid overflow-hidden rounded-2xl border border-white/70 bg-white/80 shadow-xl shadow-indigo-100/60 backdrop-blur">
           <AgGridReact

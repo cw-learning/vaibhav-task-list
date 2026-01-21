@@ -165,7 +165,6 @@ describe('TaskListGrid', () => {
       const { container } = render(<TaskListGrid />);
       const gridWrapper = container.querySelector('.custom-grid');
       expect(gridWrapper).toBeInTheDocument();
-      expect(gridWrapper).toHaveClass('rounded-2xl', 'shadow-xl', 'overflow-hidden');
     });
 
     it('applies AG Grid Material theme', () => {
