@@ -1,12 +1,93 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import TaskList from '../TaskList/TaskList.jsx';
 import { useTaskLists } from '../../hooks/useTaskLists';
+
+//Ag grid imports
+import { AgGridReact } from 'ag-grid-react';
+import {
+  ClientSideRowModelModule,
+  ModuleRegistry,
+  ValidationModule,
+  PaginationModule,
+  themeMaterial,
+  AllCommunityModule
+} from "ag-grid-community";
+import { MasterDetailModule, SetFilterModule  } from "ag-grid-enterprise";
+
+// Register all Community features
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  MasterDetailModule,
+  PaginationModule,
+  AllCommunityModule,
+  SetFilterModule,
+  ...(!import.meta.env.PROD ? [ValidationModule] : []),
+]);
+const PAGINATION = true;
+const PAGINATION_PAGE_SIZE = 5;
+const PAGINATION_PAGE_SIZE_SELECTOR = [5, 10, 20];
 
 export default function TaskListGrid() {
   const { taskLists, setTaskLists, loading, error } = useTaskLists();
   const [newListTitle, setNewListTitle] = useState('');
 
-  // Helper function to calculate status based on items
+  const columnDefs = useMemo(() => [
+  { field: 'id', cellRenderer: 'agGroupCellRenderer' },
+  { field: 'title', flex: 2 },
+  { field: 'status', filter: 'agSetColumnFilter' },
+  {
+    field: 'totalItems',
+    valueGetter: ({ data }) => (data?.items?.length ?? 0),
+  },
+  {
+    field: 'pendingItems',
+    valueGetter: ({ data }) => (data?.items ?? []).filter((item) => !item.completed).length,
+  },
+  {
+    field: 'completedItems',
+    valueGetter: ({ data }) => (data?.items ?? []).filter((item) => item.completed).length,
+  },
+  {
+    field: 'progress',
+    valueGetter: ({ data }) => {
+      const items = data?.items ?? [];
+      const total = items.length;
+      const completed = items.filter((item) => item.completed).length;
+      if (data?.status === 'completed') return '100%';
+      return total === 0 ? '0%' : `${Math.round((completed / total) * 100)}%`;
+    },
+  },
+], []);
+  
+  const defaultColDef = useMemo(() => {
+    return {
+      flex: 1,
+      sortable: true,
+      resizable: true,
+      filter: true,
+    };
+  }, []);
+  
+  const detailCellRendererParams = useMemo(() => {
+    return {
+      detailGridOptions: {
+        pagination: true,
+        paginationAutoPageSize: true,
+        columnDefs: [
+          { field: "id" },
+          { field: "title" },
+          { field: "completed", valueGetter: (params) => params.data.completed ? 'Yes' : 'No' },
+        ],
+        defaultColDef: {
+          flex: 1,
+        }
+      },
+      getDetailRowData: (params) => {
+        params.successCallback(params.data.items);
+      },
+    };
+  }, []);
+
   const calculateStatus = (items) => {
     if (items.length === 0) return 'not-started';
     const allCompleted = items.every(item => item.completed);
@@ -78,8 +159,29 @@ export default function TaskListGrid() {
     }));
   };
 
+  const pagination = true;
+  const paginationPageSize = 5;
+  const paginationPageSizeSelector = [5, 10, 20];
   return (
     <div className="bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 max-w-full p-8">
+      <div className = 'max-w-7xl mx-auto py-5'>
+        <h1 className="text-4xl font-bold mb-8 pb-1 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">AgGrid Summary Table</h1>
+        <div className="ag-theme-material custom-grid overflow-hidden rounded-2xl border border-white/70 bg-white/80 shadow-xl shadow-indigo-100/60 backdrop-blur">
+          <AgGridReact
+              theme = {themeMaterial}
+              rowData={taskLists}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              masterDetail={true}
+              detailCellRendererParams={detailCellRendererParams}
+              domLayout='autoHeight'
+              pagination={PAGINATION}
+              paginationPageSize={PAGINATION_PAGE_SIZE}
+              paginationPageSizeSelector={PAGINATION_PAGE_SIZE_SELECTOR}
+              animateRows={true}
+          />
+        </div>
+    </div>
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">Task Lists</h1>
 
