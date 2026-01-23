@@ -1,4 +1,3 @@
-// src/constants/colors.test.ts
 import { describe, it, expect } from 'vitest';
 import { TASK_STATUS, type TaskStatus } from './status';
 import { STATUS_COLORS, STATUS_BG_COLORS } from './colors';
