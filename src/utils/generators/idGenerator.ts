@@ -1,9 +1,8 @@
-/**
- * Generates a unique ID using timestamp and random number
- * @returns {string} Unique identifier
- */
 export const generateUniqueId = (): string => {
-  const timestamp = Date.now();
-  const randomNum = Math.floor(Math.random() * 1000000);
-  return `${timestamp}-${randomNum}`;
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  // Fallback: still not cryptographically strong, but lower collision risk than a 1e6 range.
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
 };

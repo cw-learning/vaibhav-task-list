@@ -16,6 +16,6 @@ describe('getStatusDisplayText', () => {
   });
 
   it('should return "Unknown" for invalid status', () => {
-    expect(getStatusDisplayText('invalid' as any)).toBe('Unknown');
+    expect(getStatusDisplayText('invalid')).toBe('Unknown');
   });
 });

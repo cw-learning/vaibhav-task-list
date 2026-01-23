@@ -1,23 +1,24 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generateUniqueId } from './idGenerator';
 
 describe('generateUniqueId', () => {
-  it('should generate a unique ID', () => {
-    const id1 = generateUniqueId();
-    const id2 = generateUniqueId();
-    
-    expect(id1).toBeTruthy();
-    expect(id2).toBeTruthy();
-    expect(id1).not.toBe(id2);
+  const originalCrypto = globalThis.crypto;
+
+  beforeEach(() => {
+    globalThis.crypto = { randomUUID: vi.fn() } as unknown as Crypto;
   });
 
-  it('should return a string', () => {
-    const id = generateUniqueId();
-    expect(typeof id).toBe('string');
+  afterEach(() => {
+    globalThis.crypto = originalCrypto;
+    vi.restoreAllMocks();
   });
 
-  it('should contain timestamp and random number', () => {
-    const id = generateUniqueId();
-    expect(id).toMatch(/^\d+-\d+$/);
+  it('returns a string and produces different IDs', () => {
+    (globalThis.crypto.randomUUID as unknown as ReturnType<typeof vi.fn>)
+      .mockReturnValueOnce('id-1')
+      .mockReturnValueOnce('id-2');
+
+    expect(generateUniqueId()).toBe('id-1');
+    expect(generateUniqueId()).toBe('id-2');
   });
 });

@@ -1,16 +1,14 @@
-import { TASK_STATUS, TaskStatus } from '@constants/status';
+import { TASK_STATUS, type TaskStatus } from '@constants/status';
 
-/**
- * Converts task status to human-readable text
- * @param {TaskStatus} status - The task status
- * @returns {string} Display text for the status
- */
-export const getStatusDisplayText = (status: TaskStatus): string => {
-  const statusMap: Record<TaskStatus, string> = {
-    [TASK_STATUS.NOT_STARTED]: 'Not Started',
-    [TASK_STATUS.IN_PROGRESS]: 'In Progress',
-    [TASK_STATUS.COMPLETED]: 'Completed',
-  };
+const STATUS_DISPLAY_TEXT = {
+  [TASK_STATUS.NOT_STARTED]: 'Not Started',
+  [TASK_STATUS.IN_PROGRESS]: 'In Progress',
+  [TASK_STATUS.COMPLETED]: 'Completed',
+} as const satisfies Record<TaskStatus, string>;
 
-  return statusMap[status] ?? 'Unknown';
+const isTaskStatus = (value: string): value is TaskStatus =>
+  Object.prototype.hasOwnProperty.call(STATUS_DISPLAY_TEXT, value);
+
+export const getStatusDisplayText = (status: TaskStatus | string): string => {
+  return isTaskStatus(status) ? STATUS_DISPLAY_TEXT[status] : 'Unknown';
 };
