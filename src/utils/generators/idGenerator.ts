@@ -1,8 +1,9 @@
 export const generateUniqueId = (): string => {
-  if (globalThis.crypto?.randomUUID) {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
     return globalThis.crypto.randomUUID();
   }
-
-  // Fallback: still not cryptographically strong, but lower collision risk than a 1e6 range.
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+  const timestamp = Date.now().toString(36);
+  const randomString = Math.random().toString(36).slice(2, 12);
+   // Fallback: still not cryptographically strong, but lower collision risk than a 1e6 range.
+  return `${timestamp}-${randomString}`;
 };

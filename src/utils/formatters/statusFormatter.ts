@@ -1,14 +1,8 @@
-import { TASK_STATUS, type TaskStatus } from '@constants/status';
+import { type TaskStatus, STATUS_DISPLAY_TEXT } from '@constants/status';
 
-const STATUS_DISPLAY_TEXT = {
-  [TASK_STATUS.NOT_STARTED]: 'Not Started',
-  [TASK_STATUS.IN_PROGRESS]: 'In Progress',
-  [TASK_STATUS.COMPLETED]: 'Completed',
-} as const satisfies Record<TaskStatus, string>;
-
-const isTaskStatus = (value: string): value is TaskStatus =>
+const isTaskStatus = (value: string) =>
   Object.prototype.hasOwnProperty.call(STATUS_DISPLAY_TEXT, value);
 
-export const getStatusDisplayText = (status: TaskStatus | string): string => {
+export const getStatusDisplayText = (status: TaskStatus): string => {
   return isTaskStatus(status) ? STATUS_DISPLAY_TEXT[status] : 'Unknown';
 };

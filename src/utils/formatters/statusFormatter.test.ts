@@ -18,4 +18,14 @@ describe('getStatusDisplayText', () => {
   it('should return "Unknown" for invalid status', () => {
     expect(getStatusDisplayText('invalid')).toBe('Unknown');
   });
+
+  it('should return "Unknown" for empty string', () => {
+    expect(getStatusDisplayText('')).toBe('Unknown');
+  });
+
+  it('should return "Unknown" for similar but invalid status', () => {
+    expect(getStatusDisplayText('not-started-invalid')).toBe('Unknown');
+    expect(getStatusDisplayText('in-progress2')).toBe('Unknown');
+    expect(getStatusDisplayText('completed-extra')).toBe('Unknown');
+  });
 });
