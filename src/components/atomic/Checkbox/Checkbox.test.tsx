@@ -1,0 +1,58 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Checkbox } from './Checkbox';
+
+describe('Checkbox', () => {
+  it('should render checkbox with label', () => {
+    render(<Checkbox label="Test Label" />);
+    expect(screen.getByLabelText('Test Label')).toBeInTheDocument();
+  });
+
+  it('should handle checked state', () => {
+    render(<Checkbox label="Test" checked />);
+    const checkbox = screen.getByLabelText('Test') as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it('should call onChange when clicked', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Checkbox label="Test" onChange={handleChange} />);
+    
+    await user.click(screen.getByLabelText('Test'));
+    expect(handleChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call onChange when disabled', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(<Checkbox label="Test" onChange={handleChange} disabled />);
+    
+    await user.click(screen.getByLabelText('Test'));
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('should render without label', () => {
+    render(<Checkbox checked />);
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+  });
+
+  it('should apply strike-through style when checked', () => {
+    render(<Checkbox label="Test" checked />);
+    const label = screen.getByText('Test');
+    expect(label.className).toContain('line-through');
+  });
+  it('should update label styles when uncontrolled checkbox is toggled', async () => {
+  const user = userEvent.setup();
+  render(<Checkbox label="Accept" defaultChecked={false} />);
+
+  const checkbox = screen.getByRole('checkbox');
+  const label = screen.getByText('Accept');
+
+  expect(label.className).not.toContain('line-through');
+
+  await user.click(checkbox);
+  expect(label.className).toContain('line-through');
+});
+});
