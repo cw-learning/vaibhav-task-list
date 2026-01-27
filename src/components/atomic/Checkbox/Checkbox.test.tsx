@@ -43,4 +43,16 @@ describe('Checkbox', () => {
     const label = screen.getByText('Test');
     expect(label.className).toContain('line-through');
   });
+  it('should update label styles when uncontrolled checkbox is toggled', async () => {
+  const user = userEvent.setup();
+  render(<Checkbox label="Accept" defaultChecked={false} />);
+
+  const checkbox = screen.getByRole('checkbox');
+  const label = screen.getByText('Accept');
+
+  expect(label.className).not.toContain('line-through');
+
+  await user.click(checkbox);
+  expect(label.className).toContain('line-through');
+});
 });
