@@ -1,4 +1,5 @@
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 import { Badge } from './components/atomic/Badge';
 import { Button } from './components/atomic/Button';
 import { Checkbox } from './components/atomic/Checkbox';
@@ -6,49 +7,37 @@ import { Input } from './components/atomic/Input';
 import { ProgressBar } from './components/atomic/ProgressBar';
 
 function App() {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleClickableButtonClick = () => {
+    alert('Clicked!');
+  };
 
   return (
-  <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-    <h1>Atomic Components Showcase</h1>
-    <p>Use this page to manually test the components. Interact with them below!</p>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      {/* Badge */}
+      <Badge>Default Badge</Badge>
+      <Badge variant="success">Success Badge</Badge>
+      <Badge variant="warning">Warning Badge</Badge>
+      <Badge variant="danger">Danger Badge</Badge>
+      <Badge variant="info">Info Badge</Badge>
 
-    {/* Badge Section */}
-    <section style={{ marginBottom: '40px' }}>
-      <h2>Badge</h2>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <Badge variant="primary" text="Primary Badge" />
-        <Badge variant="secondary" text="Secondary Badge" />
-        <Badge variant="success" text="Success Badge" />
-        <Badge variant="danger" text="Danger Badge" />
-        <Badge variant="warning" text="Warning Badge" />
-        <Badge variant="info" text="Info Badge" />
-      </div>
-    </section>
+      {/* Button */}
+      <Button size="small" variant="primary">Small Primary</Button>
+      <Button size="medium" variant="secondary">Medium Secondary</Button>
+      <Button size="medium" variant="danger" disabled>Disabled Danger</Button>
+      <Button size="small" variant="primary" onClick={handleClickableButtonClick}>
+        Clickable
+      </Button>
 
-    {/* Button Section */}
-    <section style={{ marginBottom: '40px' }}>
-      <h2>Button</h2>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <Button size="small" variant="primary">Small Primary</Button>
-        <Button size="medium" variant="secondary">Medium Secondary</Button>
-        <Button size="large" variant="success">Large Success</Button>
-        <Button size="medium" variant="danger" disabled>Disabled Danger</Button>
-        <Button size="small" variant="warning" onClick={() => alert('Clicked!')}>Clickable Warning</Button>
-      </div>
-    </section>
+      {/* Checkbox */}
+      <Checkbox
+        label="Interactive Checkbox"
+        checked={isChecked}
+        onChange={(e) => setIsChecked(e.target.checked)}
+      />
 
-    {/* Checkbox Section */}
-    <section style={{ marginBottom: '40px' }}>
-      <h2>Checkbox</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <Checkbox label="Unchecked Checkbox" checked={false} />
-        <Checkbox label="Checked Checkbox" checked={true} />
-        <Checkbox label="Disabled Unchecked" checked={false} disabled />
-        <Checkbox label="Disabled Checked" checked={true} disabled />
-      </div>
-    </section>
-
-    {/* Input Section */}
+      {/* Input Section */}
     <section style={{ marginBottom: '40px' }}>
       <h2>Input</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '300px' }}>
@@ -70,8 +59,8 @@ function App() {
         <ProgressBar value={100} max={100} />
       </div>
     </section>
-  </div>
-);
+    </div>
+  );
 }
 
-export default App
+export default App;

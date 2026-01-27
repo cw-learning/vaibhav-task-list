@@ -17,11 +17,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   showPercentage = true,
   className = '',
 }) => {
+  const safeMax = max > 0 ? max : 0;
+  const clampedValue = safeMax === 0 ? 0 : Math.min(Math.max(value, 0), safeMax);
   const percentage = getProgressPercentage(value, max);
 
   return (
     <div className={`${CONTAINER_STYLES} ${className}`.trim()}>
-      {(label ?? showPercentage) && (
+      {(Boolean(label) || showPercentage) && (
         <div className={LABEL_CONTAINER_STYLES}>
           {label && <span className={LABEL_TEXT_STYLES}>{label}</span>}
           {showPercentage && (
@@ -34,9 +36,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           className={BAR_FILL_STYLES}
           style={{ width: `${percentage}%` }}
           role="progressbar"
-          aria-valuenow={value}
+          aria-valuenow={clampedValue}
           aria-valuemin={0}
-          aria-valuemax={max}
+          aria-valuemax={safeMax}
+          aria-valuetext={`${Math.round(percentage)}%`}
         />
       </div>
     </div>

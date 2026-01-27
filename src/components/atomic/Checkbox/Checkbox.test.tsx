@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Checkbox } from './Checkbox';
 
 describe('Checkbox', () => {
@@ -14,19 +15,21 @@ describe('Checkbox', () => {
     expect(checkbox.checked).toBe(true);
   });
 
-  it('should call onChange when clicked', () => {
+  it('should call onChange when clicked', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Checkbox label="Test" onChange={handleChange} />);
     
-    fireEvent.click(screen.getByLabelText('Test'));
+    await user.click(screen.getByLabelText('Test'));
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
 
-  it('should not call onChange when disabled', () => {
+  it('should not call onChange when disabled', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Checkbox label="Test" onChange={handleChange} disabled />);
     
-    fireEvent.click(screen.getByLabelText('Test'));
+    await user.click(screen.getByLabelText('Test'));
     expect(handleChange).not.toHaveBeenCalled();
   });
 

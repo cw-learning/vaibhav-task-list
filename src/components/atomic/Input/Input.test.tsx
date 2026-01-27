@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Input } from './Input';
 
 describe('Input', () => {
@@ -13,14 +14,15 @@ describe('Input', () => {
     expect(screen.getByText('Invalid email')).toBeInTheDocument();
   });
 
-  it('should handle value changes', () => {
+  it('should handle value changes', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Input label="Name" onChange={handleChange} />);
     
     const input = screen.getByLabelText('Name');
-    fireEvent.change(input, { target: { value: 'John' } });
+    await user.type(input, 'John');
     
-    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledTimes(4); // Called once per character typed
   });
 
   it('should render without label', () => {

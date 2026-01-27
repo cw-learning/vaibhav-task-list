@@ -9,18 +9,19 @@ import {
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   label,
-  checked = false,
+  checked,
   disabled = false,
   onChange,
   className = '',
   ...props
 }) => {
   const containerClass = `${CHECKBOX_CONTAINER_STYLES} ${disabled ? DISABLED_STYLES : ''} ${className}`.trim();
-  const labelClass = getCheckboxLabelStyles(checked);
+  const labelClass = getCheckboxLabelStyles(Boolean(checked));
 
   return (
     <label className={containerClass}>
       <input
+        {...props}
         type="checkbox"
         className={CHECKBOX_INPUT_STYLES}
         checked={checked}

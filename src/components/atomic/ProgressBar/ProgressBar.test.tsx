@@ -4,9 +4,8 @@ import { ProgressBar } from './ProgressBar';
 
 describe('ProgressBar', () => {
   it('should render progress bar', () => {
-    const { container } = render(<ProgressBar value={50} />);
-    const progressBar = container.querySelector('[role="progressbar"]');
-    expect(progressBar).toBeInTheDocument();
+    render(<ProgressBar value={50} />);
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
   it('should display correct percentage', () => {

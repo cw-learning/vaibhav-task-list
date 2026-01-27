@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { InputProps } from './Input.types';
 import {
   CONTAINER_STYLES,
@@ -14,7 +14,9 @@ export const Input: React.FC<InputProps> = ({
   id,
   ...props
 }) => {
-  const inputId = id ?? `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+  const reactId = useId();
+  const inputId = id ?? reactId;
+  const errorId = error ? `${inputId}-error` : undefined;
   const inputStyles = getInputStyles(Boolean(error));
 
   return (
@@ -26,10 +28,16 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         id={inputId}
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={errorId}
         className={`${inputStyles} ${className}`.trim()}
         {...props}
       />
-      {error && <span className={ERROR_TEXT_STYLES}>{error}</span>}
+      {error && (
+        <span id={errorId} className={ERROR_TEXT_STYLES} role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 };

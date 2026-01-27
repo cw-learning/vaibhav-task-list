@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Button } from './Button';
 
 describe('Button', () => {
@@ -8,19 +9,21 @@ describe('Button', () => {
     expect(screen.getByText('Click me')).toBeInTheDocument();
   });
 
-  it('should handle click events', () => {
+  it('should handle click events', async () => {
+    const user = userEvent.setup();
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
     
-    fireEvent.click(screen.getByText('Click me'));
+    await user.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('should not trigger click when disabled', () => {
+  it('should not trigger click when disabled', async () => {
+    const user = userEvent.setup();
     const handleClick = vi.fn();
     render(<Button onClick={handleClick} disabled>Click me</Button>);
     
-    fireEvent.click(screen.getByText('Click me'));
+    await user.click(screen.getByText('Click me'));
     expect(handleClick).not.toHaveBeenCalled();
   });
 
