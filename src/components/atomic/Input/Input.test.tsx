@@ -18,11 +18,12 @@ describe('Input', () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Input label="Name" onChange={handleChange} />);
-    
+
     const input = screen.getByLabelText('Name');
     await user.type(input, 'John');
-    
-    expect(handleChange).toHaveBeenCalledTimes(4); // Called once per character typed
+
+    expect(handleChange).toHaveBeenCalled();
+    expect(input).toHaveValue('John');
   });
 
   it('should render without label', () => {

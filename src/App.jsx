@@ -15,6 +15,8 @@ function App() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1>Atomic Components Showcase</h1>
+      <p>Use this page to manually test the components. Interact with them below!</p>
       {/* Badge */}
       <Badge>Default Badge</Badge>
       <Badge variant="success">Success Badge</Badge>

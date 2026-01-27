@@ -19,7 +19,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => {
   const safeMax = max > 0 ? max : 0;
   const clampedValue = safeMax === 0 ? 0 : Math.min(Math.max(value, 0), safeMax);
-  const percentage = getProgressPercentage(value, max);
+  const percentage = getProgressPercentage(clampedValue, safeMax);
 
   return (
     <div className={`${CONTAINER_STYLES} ${className}`.trim()}>

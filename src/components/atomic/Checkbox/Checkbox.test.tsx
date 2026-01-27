@@ -34,9 +34,8 @@ describe('Checkbox', () => {
   });
 
   it('should render without label', () => {
-    const { container } = render(<Checkbox checked />);
-    const checkbox = container.querySelector('input[type="checkbox"]');
-    expect(checkbox).toBeInTheDocument();
+    render(<Checkbox checked />);
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('should apply strike-through style when checked', () => {

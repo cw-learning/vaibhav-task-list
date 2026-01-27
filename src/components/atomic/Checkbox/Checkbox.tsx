@@ -7,26 +7,39 @@ import {
   DISABLED_STYLES,
 } from './Checkbox.styles';
 
+import { useState } from 'react';
+import type { ChangeEventHandler } from 'react';
+
 export const Checkbox: React.FC<CheckboxProps> = ({
   label,
   checked,
+  defaultChecked,
   disabled = false,
   onChange,
   className = '',
-  ...props
+  ...inputProps
 }) => {
-  const containerClass = `${CHECKBOX_CONTAINER_STYLES} ${disabled ? DISABLED_STYLES : ''} ${className}`.trim();
-  const labelClass = getCheckboxLabelStyles(Boolean(checked));
+  const isControlled = checked !== undefined;
+  const [uncontrolledChecked, setUncontrolledChecked] = useState(Boolean(defaultChecked));
+  const checkedForStyles = isControlled ? checked : uncontrolledChecked;
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!isControlled) setUncontrolledChecked(e.target.checked);
+    onChange?.(e);
+  };
+
+  const labelClass = getCheckboxLabelStyles(Boolean(checkedForStyles));
 
   return (
-    <label className={containerClass}>
+    <label className={`${CHECKBOX_CONTAINER_STYLES} ${disabled ? DISABLED_STYLES : ''} ${className}`}>
       <input
-        {...props}
+        {...inputProps}
         type="checkbox"
         className={CHECKBOX_INPUT_STYLES}
-        checked={checked}
+        checked={isControlled ? checked : undefined}
+        defaultChecked={!isControlled ? defaultChecked : undefined}
         disabled={disabled}
-        onChange={disabled ? undefined : onChange}
+        onChange={disabled ? undefined : handleChange}
       />
       {label && <span className={labelClass}>{label}</span>}
     </label>
