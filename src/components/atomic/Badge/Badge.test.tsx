@@ -10,16 +10,16 @@ describe('Badge', () => {
 
   it('should render different variants', () => {
     const { rerender } = render(<Badge variant="success">Success</Badge>);
-    expect(screen.getByText('Success')).toBeInTheDocument();
+    expect(screen.getByText('Success')).toHaveClass('bg-green-100');
 
     rerender(<Badge variant="warning">Warning</Badge>);
-    expect(screen.getByText('Warning')).toBeInTheDocument();
+    expect(screen.getByText('Warning')).toHaveClass('bg-yellow-100');
 
     rerender(<Badge variant="danger">Danger</Badge>);
-    expect(screen.getByText('Danger')).toBeInTheDocument();
+    expect(screen.getByText('Danger')).toHaveClass('bg-red-100');
 
     rerender(<Badge variant="info">Info</Badge>);
-    expect(screen.getByText('Info')).toBeInTheDocument();
+    expect(screen.getByText('Info')).toHaveClass('bg-blue-100');
   });
 
   it('should apply custom className', () => {

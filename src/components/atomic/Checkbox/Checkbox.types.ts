@@ -1,4 +1,7 @@
-export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+import type { InputHTMLAttributes } from 'react';
+
+export interface CheckboxProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string;
   checked?: boolean;
 }
